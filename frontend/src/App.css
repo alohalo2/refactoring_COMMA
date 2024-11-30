@@ -5,6 +5,7 @@ html,
     padding: 0;
     width: 100%; /* 전체 너비 */
     height: 100%; /* 전체 높이 */
+    box-sizing: border-box;
 }
 
 .App {

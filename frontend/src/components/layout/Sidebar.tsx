@@ -1,5 +1,10 @@
 import React from 'react';
-import { LO_sidebar_box, LO_sidebar_first, LO_sidebar_second, LO_sidebar_third } from "../../css/Sidebar.css";
+import { useNavigate } from 'react-router-dom';
+import { LO_sidebar_box, 
+        LO_sidebar_first, 
+        LO_sidebar_second, 
+        LO_sidebar_third 
+} from "../../css/Sidebar.css";
 
 interface SidebarProps {
     className?: string; // 올바른 타입
@@ -18,6 +23,13 @@ const toMyPage = () => {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ className }) => {
+
+    const navi = useNavigate();
+
+    const handleLoginClick = () => {
+        navi('/login'); // Join Page로 이동
+    };
+
     return (
     <div className={LO_sidebar_box}>
         <div className={LO_sidebar_first}>
@@ -29,7 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
                 <li onClick={toTravelInformation}>Travel Information</li>
                 <li onClick={toCardBoard}>Card Board</li>
                 <li onClick={toMyPage}>My Page</li>
-                <li>Login</li>
+                <li onClick={handleLoginClick}>Login</li>
             </ul>
         </div>
         <div className={LO_sidebar_third}>
