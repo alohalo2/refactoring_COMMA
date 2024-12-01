@@ -1,6 +1,7 @@
 import React from "react";
 import logo from "./logo.svg";
-import "./App.css";
+import { App_Style
+} from "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
 import TravelInformation from "./pages/TravelInformation";
@@ -12,7 +13,7 @@ import LoginAndJoinBox from "./components/login&join/LoginAndJoinBox";
 
 function App() {
     return (
-      <div className="App">
+      <div className={App_Style}>
         <Routes>
             <Route path="/login" element={<LoginAndJoinBox />}>
               <Route index element={<Login />} /> {/* 기본 경로에서 Login 렌더링 */}
