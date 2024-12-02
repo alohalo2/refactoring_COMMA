@@ -24,8 +24,7 @@ export const Join_Header = style({
     marginTop: '0',
 });
 
-export const Join_Input_Group = style({
-});
+
 
 export const ID_Input_Style = style({
     border: 'none',
@@ -121,13 +120,13 @@ export const Label_box = style({
 
 export const Join_Radio_Label = recipe({
     base: {
-    position: 'relative',
-    background: 'none',
-    border: 'none',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'color 0.3s ease-in-out',
+        position: 'relative',
+        background: 'none',
+        border: 'none',
+        fontSize: '16px',
+        fontWeight: '600',
+        cursor: 'pointer',
+        transition: 'color 0.3s ease-in-out',
     selectors: {
         '&::after': {
         content: '""',
@@ -150,17 +149,17 @@ export const Join_Radio_Label = recipe({
     },
     },
     variants: {
-    isSelected: {
-        true: {
-        color: '#FF6B00', // 선택 시 텍스트 색상
-        selectors: {
-            '&::after': {
-            transform: 'scaleX(1)', // 선택 시 밑줄 표시
+        isSelected: {
+            true: {
+                color: '#FF6B00', // 선택 시 텍스트 색상
+                selectors: {
+                    '&::after': {
+                    transform: 'scaleX(1)', // 선택 시 밑줄 표시
+                    },
+                },
             },
+            false: {},
         },
-        },
-        false: {},
-    },
     },
 });
 
@@ -303,6 +302,19 @@ export const Cancle_Button = style({
             color: '#FF6B00',
         },
     },
+});
+
+export const Join_Input_Group = style({
+    position: 'relative',
+});
+
+export const Join_Pw_Blind_Icon = style({
+    width: '20px',
+    height: '20px',
+    position: 'absolute',
+    top: '8px',
+    right: '5px',
+    cursor: 'pointer',
 });
 
 export const Join_Input_Style = style({

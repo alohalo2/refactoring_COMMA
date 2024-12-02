@@ -28,6 +28,7 @@ import {
     Join_Button,
     Cancle_Button,
     Join_Input_Style,
+    Join_Pw_Blind_Icon,
 } from '../css/Join.css';
 
 declare global {
@@ -55,6 +56,9 @@ const loadDaumPostcodeScript = (): Promise<void> => {
 const JoinPage: React.FC = () => {
 
     const [selectedGender, setSelectedGender] = useState<string | null>(null);
+    const [focusedField, setFocusedField] = useState<string | null>(null);
+    const [isPwVisible, setIsPwVisible] = useState(false); // pw의 가시성 상태
+    const [isPwCheckVisible, setIsPwCheckVisible] = useState(false); // pwCheck의 가시성 상태
 
     const navi = useNavigate();
     const [formData, setFormData] = useState({
@@ -104,6 +108,29 @@ const JoinPage: React.FC = () => {
         console.log('Form submitted:', { ...formData, fullAddress });
     };
 
+    // ID, PW Focus 상태 관리
+    const handleFocus = (field: string) => setFocusedField(field);
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        // blur를 방지하려면 클릭된 요소를 확인
+        const clickedElement = e.relatedTarget as HTMLElement;
+        if (clickedElement?.classList.contains(Join_Pw_Blind_Icon)) {
+        return; // 비밀번호 보기 버튼 클릭 시 blur 방지
+        }
+        setFocusedField(null); // blur 이벤트 정상 처리
+    };
+
+    const handleAddressBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+        setFocusedField(null); // blur 이벤트 정상 처리
+    };
+
+    const togglePwVisibility = () => {
+        setIsPwVisible((prev) => !prev);
+    };
+
+    const togglePwCheckVisibility = () => {
+        setIsPwCheckVisible((prev) => !prev);
+    };
+
     const handleCancel = () => {
         navi('/login'); // 메인 화면으로 이동
     };
@@ -119,29 +146,57 @@ const JoinPage: React.FC = () => {
                         name="id"
                         value={formData.id}
                         onChange={handleChange}
-                        className={ID_Input_Style}
+                        onFocus={() => handleFocus('id')}
+                        onBlur={handleBlur}
+                        className={`${ID_Input_Style} ${
+                            focusedField === 'id' ? ID_Input_Focus_Style : ''
+                        }`}
                         required
                         />
                     </div>
                     <div className={Join_Input_Group}>
                         <input
-                        type="password"
+                        type={isPwVisible ? 'text' : 'password'}
                         name="pw"
                         value={formData.pw}
                         onChange={handleChange}
-                        className={PW_Input_Style}
+                        onFocus={() => handleFocus('pw')}
+                        onBlur={handleBlur}
+                        className={`${PW_Input_Style} ${
+                            focusedField === 'pw' ? PW_Input_Focus_Style : ''
+                        }`}
                         required
                         />
+                        <span
+                        onMouseDown={(e) => e.preventDefault()} // 클릭 시 blur 방지
+                        onClick={togglePwVisibility}
+                        >
+                            <img className={Join_Pw_Blind_Icon} 
+                                src={isPwVisible ? '/images/blind_on_icon.svg' : '/images/blind_off_icon.svg'}
+                            />
+                        </span>
                     </div>
                     <div className={Join_Input_Group}>
                         <input
-                        type="password"
+                        type={isPwCheckVisible ? 'text' : 'password'}
                         name="pwCheck"
                         value={formData.pwCheck}
                         onChange={handleChange}
-                        className={PW_CHECK_Input_Style}
+                        onFocus={() => handleFocus('pwCheck')}
+                        onBlur={handleBlur}
+                        className={`${PW_CHECK_Input_Style} ${
+                            focusedField === 'pwCheck' ? PW_CHECK_Input_Focus_Style : ''
+                        }`}
                         required
                         />
+                        <span
+                        onMouseDown={(e) => e.preventDefault()} // 클릭 시 blur 방지
+                        onClick={togglePwCheckVisibility}
+                        >
+                            <img className={Join_Pw_Blind_Icon} 
+                                src={isPwCheckVisible ? '/images/blind_on_icon.svg' : '/images/blind_off_icon.svg'}
+                            />
+                        </span>
                     </div>
                     <div className={Join_Input_Group}>
                         <input
@@ -149,7 +204,11 @@ const JoinPage: React.FC = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className={NAME_Input_Style}
+                        onFocus={() => handleFocus('name')}
+                        onBlur={handleBlur}
+                        className={`${NAME_Input_Style} ${
+                            focusedField === 'name' ? NAME_Input_Focus_Style : ''
+                        }`}
                         required
                         />
                     </div>
@@ -189,6 +248,8 @@ const JoinPage: React.FC = () => {
                         type="text"
                         name="location"
                         onChange={handleChange}
+                        onFocus={() => handleFocus('name')}
+                        onBlur={handleBlur}
                         readOnly // 직접 입력을 방지
                         className={WHERE_YOU_LIVE_Input_Style}
                         required
@@ -202,7 +263,11 @@ const JoinPage: React.FC = () => {
                             onClick={handleAddressSearch} // 클릭 시 주소 검색 실행
                             rows={2} // 두 줄 표시
                             placeholder='주소'
-                            className={WHERE_YOU_LIVE_Second_Input_Style}
+                            onFocus={() => handleFocus('selectedAddress')}
+                            onBlur={handleAddressBlur}
+                            className={`${WHERE_YOU_LIVE_Second_Input_Style} ${
+                                focusedField === 'selectedAddress' ? WHERE_YOU_LIVE_Input_Focus_Style : ''
+                            }`}
                         />
                     </div>
                     <div className={Join_Input_Group}>
@@ -211,8 +276,12 @@ const JoinPage: React.FC = () => {
                             name="detailedAddress"
                             value={formData.detailedAddress}
                             onChange={handleChange}
+                            onFocus={() => handleFocus('detailedAddress')}
+                            onBlur={handleBlur}
                             placeholder='상세 주소를 입력하세요.'
-                            className={WHERE_YOU_LIVE_Third_Input_Style}
+                            className={`${WHERE_YOU_LIVE_Third_Input_Style} ${
+                                focusedField === 'detailedAddress' ? WHERE_YOU_LIVE_Input_Focus_Style : ''
+                            }`}
                         />
                     </div>
                     <div className={Join_Button_Group}>
