@@ -1,8 +1,20 @@
 import React from 'react';
+import { TripFormState } from './PlanYourTripTypes';
 
-const PlanYourTripStep2 = () => {
+type PlanYourTripStep2Props = {
+    formData: TripFormState;
+    setFormData: React.Dispatch<React.SetStateAction<TripFormState>>;
+    nextStep: () => void;
+    prevStep: () => void;
+};
+
+const PlanYourTripStep2: React.FC<PlanYourTripStep2Props> = ({ formData, setFormData, nextStep, prevStep }) => {
     return (
-        <div>PlanYourTripStep2</div>
+    <div>
+        <h2>Step 2</h2>
+        <button onClick={prevStep}>Prev</button>
+        <button onClick={nextStep}>Next</button>
+    </div>
     );
 };
 

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { TripFormState } from '../components/plan your trip/PlanYourTripTypes';
+import PlanYourTripHeader from '../components/plan your trip/PlanYourTripHeader';
 import PlanYourTripStep1 from '../components/plan your trip/PlanYourTripStep1';
 import PlanYourTripStep2 from '../components/plan your trip/PlanYourTripStep2';
 import PlanYourTripStep3 from '../components/plan your trip/PlanYourTripStep3';
@@ -7,77 +9,11 @@ import PlanYourTripStep4 from '../components/plan your trip/PlanYourTripStep4';
 import PlanYourTripStep5 from '../components/plan your trip/PlanYourTripStep5';
 import PlanYourTripStep6 from '../components/plan your trip/PlanYourTripStep6';
 
-// Define types for formData
-type Transportation = {
-    type: string; // "버스", "비행기", 등
-    duration: string;
-    startTime: string;
-    endTime: string;
-};
-
-type Activity = {
-    placeName: string;
-    startTime: string;
-    endTime: string;
-};
-
-type DailySummary = {
-    date: string;
-    activities: { time: string; location: string; activity: string }[];
-};
-
-type Timeline = {
-    time: string;
-    place: string;
-    description: string;
-};
-
-type FormData = {
-step1: {
-    title: string;
-    dateRange: { start: string; end: string };
-    themes: string[]; // ["휴양", "관광", "비즈니스", "쇼핑"]
-};
-step2: {
-    startPoint: string;
-    endPoint: string;
-    additionalPoints: string[]; // ["지역1", "지역2"]
-    transportation: Transportation[];
-};
-step3: {
-    selectedRegions: string[]; // ["성산", "제주시"]
-    searchQuery: string;
-    searchResults: { name: string; address: string; rating: number; priceRange: string }[];
-    selectedAccommodations: { name: string; id: string; address: string }[];
-};
-step4: {
-    selectedRegions: string[];
-    searchQuery: string;
-    searchResults: { name: string; address: string; rating: number }[];
-    selectedPlaces: { name: string; id: string }[];
-    activitySchedule: Activity[];
-};
-step5: {
-    dailySummary: DailySummary[];
-    timeline: Timeline[];
-};
-step6: {
-    finalPlan: {
-    title: string;
-    dateRange: { start: string; end: string };
-    themes: string[];
-    routeSummary: any[]; // Define specific structure if needed
-    accommodationSummary: any[];
-    scheduleSummary: any[];
-    };
-};
-};
-
 const PlanYourTrip: React.FC = () => {
 const navi = useNavigate();
 const location = useLocation();
 
-const [formData, setFormData] = useState<FormData>({
+const [formData, setFormData] = useState<TripFormState>({
     step1: {
         title: "",
         dateRange: { start: "", end: "" },
@@ -163,7 +99,7 @@ const prevStep = () => {
     }
 };
 
-const renderStep = () => {
+const renderStep = (): JSX.Element | null => {
     switch (currentStep) {
     case 1:
         return <PlanYourTripStep1 formData={formData} setFormData={setFormData} nextStep={nextStep} />;
@@ -189,6 +125,7 @@ useEffect(() => {
 
 return (
     <div>
+    <PlanYourTripHeader currentStep={currentStep} stepCount={6} />
     {renderStep()}
     </div>
 );

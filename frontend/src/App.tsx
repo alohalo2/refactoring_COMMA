@@ -20,7 +20,7 @@ function App() {
               <Route path="join" element={<Join />} /> {/* /login/join에서 Join 렌더링 */}
             </Route>
             <Route path="/" element={<Layout />}>
-              <Route path="/planYourTrip" element={<PlanYourTrip />} />
+              <Route path="/planYourTrip/*" element={<PlanYourTrip />} />
               <Route path="/CardBoard" element={<CardBoard />} />
               <Route path="/MyPage" element={<MyPage />} />
             </Route>
