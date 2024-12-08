@@ -11,7 +11,7 @@ interface SidebarProps {
 }
 
 const toTravelInformation = () => {
-    window.location.href = '/travelInformation';
+    window.location.href = '/planYourTrip';
 };
 
 const toCardBoard = () => {
@@ -38,7 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
         </div>
         <div className={LO_sidebar_second}>
             <ul>
-                <li onClick={toTravelInformation}>Travel Information</li>
+                <li onClick={toTravelInformation}>Plan Your Trip</li>
                 <li onClick={toCardBoard}>Card Board</li>
                 <li onClick={toMyPage}>My Page</li>
                 <li onClick={handleLoginClick}>Login</li>

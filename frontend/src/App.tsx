@@ -4,7 +4,7 @@ import { App_Style
 } from "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
-import TravelInformation from "./pages/TravelInformation";
+import PlanYourTrip from "./pages/PlanYourTrip";
 import CardBoard from "./pages/CardBoard";
 import MyPage from "./pages/MyPage";
 import Login from "./pages/Login";
@@ -20,7 +20,7 @@ function App() {
               <Route path="join" element={<Join />} /> {/* /login/join에서 Join 렌더링 */}
             </Route>
             <Route path="/" element={<Layout />}>
-              <Route path="/travelInformation" element={<TravelInformation />} />
+              <Route path="/planYourTrip" element={<PlanYourTrip />} />
               <Route path="/CardBoard" element={<CardBoard />} />
               <Route path="/MyPage" element={<MyPage />} />
             </Route>
