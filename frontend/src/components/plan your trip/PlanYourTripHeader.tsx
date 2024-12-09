@@ -7,7 +7,7 @@ import {
     PYH_Header_Label,
     PYH_Header_ProgressLine,
     PYH_BreakLine,
-} from '../../css/PlanYourTripHeader.css';
+} from '../../css/plan your trip/PlanYourTripHeader.css';
 
 
 // Props 타입 정의

@@ -10,6 +10,7 @@ export const Layout_Box = style({
 });
 
 export const Layout_Contents = style({
+    marginLeft: '25%',
     width: '75%',
     background: 'white',
     paddingRight: '50px',

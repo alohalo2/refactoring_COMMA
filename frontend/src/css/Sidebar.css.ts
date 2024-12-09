@@ -2,10 +2,14 @@ import { style,globalStyle } from '@vanilla-extract/css';
 
 export const LO_sidebar_box = style({
     width: '25%',
+    height: '100vh',
     display: 'flex',
+    flex: '1',
     flexDirection: 'column',
     justifyContent: 'center',
-    gap: '40px'
+    gap: '40px',
+    position: 'fixed',
+    overflowY: 'auto',
 });
 
 // ul 스타일 적용

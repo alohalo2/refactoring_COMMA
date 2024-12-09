@@ -34,34 +34,34 @@ export type FinalPlan = {
 
 export type TripFormState = {
     step1: {
-    title: string;
-    dateRange: { start: string; end: string };
-    themes: string[];
+        title: string;
+        dateRange: { start: string; end: string };
+        themes: string[];
     };
     step2: {
-    startPoint: string;
-    endPoint: string;
-    additionalPoints: string[];
-    transportation: Transportation[];
+        startPoint: string;
+        endPoint: string;
+        additionalPoints: string[];
+        transportation: Transportation[];
     };
     step3: {
-    selectedRegions: string[];
-    searchQuery: string;
-    searchResults: { name: string; address: string; rating: number; priceRange: string }[];
-    selectedAccommodations: { name: string; id: string; address: string }[];
+        selectedRegions: string[];
+        searchQuery: string;
+        searchResults: { name: string; address: string; rating: number; priceRange: string }[];
+        selectedAccommodations: { name: string; id: string; address: string }[];
     };
     step4: {
-    selectedRegions: string[];
-    searchQuery: string;
-    searchResults: { name: string; address: string; rating: number }[];
-    selectedPlaces: { name: string; id: string }[];
-    activitySchedule: Activity[];
+        selectedRegions: string[];
+        searchQuery: string;
+        searchResults: { name: string; address: string; rating: number }[];
+        selectedPlaces: { name: string; id: string }[];
+        activitySchedule: Activity[];
     };
     step5: {
-    dailySummary: DailySummary[];
-    timeline: Timeline[];
+        dailySummary: DailySummary[];
+        timeline: Timeline[];
     };
     step6: {
-    finalPlan: FinalPlan;
+        finalPlan: FinalPlan;
     };
 };
