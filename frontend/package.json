@@ -49,5 +49,6 @@
     "@types/react-router-dom": "^5.3.3",
     "react-app-rewired": "^2.2.1",
     "ts-loader": "^9.5.1"
-  }
+  },
+  "proxy": "https://openapi.naver.com"
 }
