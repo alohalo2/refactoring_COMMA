@@ -99,7 +99,7 @@ const PlanYourTripStep2: React.FC<PlanYourTripStep2Props> = ({ formData, setForm
                     <div>
                         <NaverMap/>
                     </div>
-                    <h3>지역 위치 검색</h3>
+                    
                     <div>
                         <label>시작 지점 설정</label>
                         <input
