@@ -18,7 +18,11 @@ declare namespace naver {
     }
 
     class Marker {
-        constructor(options: { position: LatLng; map: Map; title?: string });
+        constructor(options: { 
+            position: LatLng; 
+            map: Map; 
+            title?: string 
+        });
         setMap(map: Map | null): void;
     }
 
