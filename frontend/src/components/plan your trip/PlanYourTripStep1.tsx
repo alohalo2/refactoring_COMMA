@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import moment from 'moment';
 import { TripFormState } from './PlanYourTripTypes';
 import {
     PYTS1_Box,
@@ -15,6 +16,9 @@ import {
     PYTS1_Trip_Select_Checkbox,
     PYTS1_Button_Box,
     PYTS1_Button,
+    startDateStyle,
+    endDateStyle,
+    middleDateStyle,
 } from '../../css/plan your trip/PlanYourTripStep1.css';
 
 // Value 타입 직접 정의
@@ -28,7 +32,7 @@ type PlanYourTripStep1Props = {
 };
 
 const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setFormData, nextStep }) => {
-    const [selectedDates, setSelectedDates] = useState<Date[]>([]); // 선택한 날짜 배열
+    const [selectedDates, setSelectedDates] = useState<Date | [Date, Date] | undefined>(undefined); // 선택한 날짜 배열
 
     // 여행 테마 리스트
     const themes = ['휴양', '관광', '비즈니스', '쇼핑'];
@@ -46,43 +50,47 @@ const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setForm
 
     // 날짜 변경 핸들러
     const handleDateChange = (date: Date) => {
-        if (selectedDates.length === 0) {
-        // 첫 번째 날짜 선택
-        setSelectedDates([date]);
-        } else if (selectedDates.length === 1) {
-        // 두 번째 날짜 선택
-        const [startDate] = selectedDates;
-        const endDate = date;
-
-        // 시작일이 종료일보다 크면 교환
-        if (startDate > endDate) {
-            setSelectedDates([endDate, startDate]);
+        if (!selectedDates) {
+            // 첫 번째 날짜 선택
+            setSelectedDates(date);
+        } else if (selectedDates instanceof Date) {
+            // 두 번째 날짜 선택
+            if (selectedDates.getTime() === date.getTime()) {
+                // 같은 날짜 선택 시 단일 날짜 유지
+                setSelectedDates(date);
+            } else {
+                // 다른 날짜 선택 시 범위 설정
+                const sortedDates: [Date, Date] = selectedDates > date 
+                    ? [date, selectedDates] 
+                    : [selectedDates, date];
+                setSelectedDates(sortedDates);
+            }
         } else {
-            setSelectedDates([startDate, endDate]);
-        }
-
-        // 폼 데이터에 저장
-        setFormData({
-            ...formData,
-            step1: {
-            ...formData.step1,
-            dateRange: {
-                start: startDate.toISOString().split('T')[0],
-                end: endDate.toISOString().split('T')[0],
-            },
-            },
-        });
-        } else {
-        // 초기화 후 다시 선택
-        setSelectedDates([date]);
+            // 세 번째 클릭 시 초기화
+            setSelectedDates(date);
         }
     };
 
-        // 범위 내 날짜 확인 함수
-    const isInRange = (date: Date) => {
-        if (selectedDates.length < 2) return false;
-        const [start, end] = selectedDates;
-        return date >= start && date <= end;
+    // 날짜 선택 저장 핸들러
+    const saveSelectedDates = () => {
+        if (Array.isArray(selectedDates) && selectedDates.length === 2) {
+            const [start, end] = selectedDates;
+
+            setFormData({
+                ...formData,
+                step1: {
+                    ...formData.step1,
+                    dateRange: {
+                        start: start.toISOString().split('T')[0],
+                        end: end.toISOString().split('T')[0],
+                    },
+                },
+            });
+            
+            alert(`선택된 날짜: ${start.toDateString()} - ${end.toDateString()}`);
+        } else {
+            alert("두 날짜를 선택하세요.");
+        }
     };
 
     // 테마 선택 핸들러
@@ -98,6 +106,15 @@ const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setForm
             },
         });
     };
+
+        // 중간 날짜인지 판별하는 함수
+        const isMiddleDate = (date: Date): boolean => {
+            if (Array.isArray(selectedDates) && selectedDates.length === 2) {
+                const [start, end] = selectedDates;
+                return date > start && date < end; // 시작과 끝 사이에 있는 날짜
+            }
+            return false;
+        };
 
     return (
     <div className={PYTS1_Box}>
@@ -122,25 +139,46 @@ const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setForm
                 <h3>날짜</h3>
             </div>
             <Calendar
-            onClickDay={handleDateChange} // 날짜 클릭 핸들러
-            value={selectedDates[0]} // 기본 선택 날짜
-            calendarType="gregory" // 달력 타입 : "gregory" 월화수,  "hebrew" 일월화
-            showDoubleView={true} // 두 개의 달력 뷰 표시
-            prev2Label={null} // 년 단위 버튼(<<) 삭제
-            next2Label={null} // 년 단위 버튼(>>) 삭제
-            tileClassName={({ date, view }) => {
-                if (view === 'month') {
-                if (selectedDates.length > 0 && selectedDates.includes(date)) {
-                    return 'selected-date'; // 선택된 날짜 강조
-                }
-                if (isInRange(date)) {
-                    return 'range-date'; // 범위 내 날짜 강조
-                }
-                }
-                return null;
-            }}
-            className={PYTS1_Trip_Calendar}
+                onClickDay={handleDateChange} // 날짜 클릭 핸들러
+                // onActiveStartDateChange={handleActiveStartDateChange}
+                value={selectedDates} // 기본 선택 날짜
+                calendarType="gregory" // 달력 타입 : "gregory" 월화수,  "hebrew" 일월화
+                prev2Label={null} // 년 단위 버튼(<<) 삭제
+                next2Label={null} // 년 단위 버튼(>>) 삭제
+                formatDay={(locale, date) => moment(date).format("D")} // 일 제거 숫자만 보이게
+                formatYear={(locale, date) => moment(date).format("YYYY")} // 네비게이션 눌렀을때 숫자 년도만 보이게
+                formatMonthYear={(locale, date) => moment(date).format("YYYY. MM")} // 네비게이션에서 2023. 12 이렇게 보이도록 설정
+                minDetail="year" // 10년단위 년도 숨기기
+                showNeighboringMonth={false}
+                showDoubleView={true} // 두 개의 달력 뷰 표시
+
+                tileDisabled={({ date }) => date.getTime() < new Date(new Date().setHours(0, 0, 0, 0)).getTime()}
+
+                tileClassName={({ date }) => {
+                    if (Array.isArray(selectedDates)) {
+                        const [start, end] = selectedDates;
+
+                        if (date.toDateString() === start.toDateString()) {
+                            return startDateStyle; // 시작 날짜 스타일
+                        }
+                        if (date.toDateString() === end.toDateString()) {
+                            return endDateStyle; // 끝 날짜 스타일
+                        }
+                        if (isMiddleDate(date)) {
+                            return middleDateStyle; // 중간 날짜 스타일
+                        }
+                    }
+                    return null;
+                }}
+
+                className={PYTS1_Trip_Calendar}
             />
+        </div>
+        {/* 날짜 선택 저장 버튼 */}
+        <div className={PYTS1_Button_Box}>
+            <button type="button" onClick={saveSelectedDates} className={PYTS1_Button}>
+                날짜 선택 완료
+            </button>
         </div>
 
         {/* 여행 테마 */}
