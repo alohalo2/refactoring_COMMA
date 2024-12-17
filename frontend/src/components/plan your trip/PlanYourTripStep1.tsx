@@ -16,14 +16,15 @@ import {
     PYTS1_Trip_Select_Checkbox,
     PYTS1_Button_Box,
     PYTS1_Button,
+    singleDateStyle,
     startDateStyle,
     endDateStyle,
     middleDateStyle,
 } from '../../css/plan your trip/PlanYourTripStep1.css';
 
-// Value 타입 직접 정의
-type ValuePiece = Date | null;
-type Value = ValuePiece | [ValuePiece, ValuePiece];
+// // Value 타입 직접 정의
+// type ValuePiece = Date | null;
+// type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 type PlanYourTripStep1Props = {
     formData: TripFormState;
@@ -49,7 +50,9 @@ const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setForm
     };
 
     // 날짜 변경 핸들러
-    const handleDateChange = (date: Date) => {
+    const handleDateChange = (date: Date, event: React.MouseEvent<HTMLButtonElement>) => {
+        event.stopPropagation();
+
         if (!selectedDates) {
             // 첫 번째 날짜 선택
             setSelectedDates(date);
@@ -57,7 +60,7 @@ const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setForm
             // 두 번째 날짜 선택
             if (selectedDates.getTime() === date.getTime()) {
                 // 같은 날짜 선택 시 단일 날짜 유지
-                setSelectedDates(date);
+                setSelectedDates([date, date]);
             } else {
                 // 다른 날짜 선택 시 범위 설정
                 const sortedDates: [Date, Date] = selectedDates > date 
@@ -66,15 +69,32 @@ const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setForm
                 setSelectedDates(sortedDates);
             }
         } else {
-            // 세 번째 클릭 시 초기화
-            setSelectedDates(date);
+            // 이미 날짜 범위가 설정된 상태에서 새로 선택 시작
+            if (date.getTime() === selectedDates[0].getTime() && date.getTime() === selectedDates[1].getTime()) {
+                // 같은 날짜 선택 시 단일 날짜 유지
+                setSelectedDates([date, date]);
+            } else {
+                // 세 번째 클릭 시 새 범위 설정
+                const sortedDates: [Date, Date] = date < selectedDates[0] 
+                    ? [date, selectedDates[1]] 
+                    : date > selectedDates[1] 
+                        ? [selectedDates[0], date] 
+                        : [date, date]; // 새 선택 시작
+                setSelectedDates(sortedDates);
+            }
         }
     };
 
     // 날짜 선택 저장 핸들러
     const saveSelectedDates = () => {
+        console.log("selectedDates: " + selectedDates);
         if (Array.isArray(selectedDates) && selectedDates.length === 2) {
-            const [start, end] = selectedDates;
+            let [start, end] = selectedDates;
+
+            // 날짜가 같으면 하루 선택으로 처리
+            if (start.toDateString() === end.toDateString()) {
+                end = start;
+            }
 
             setFormData({
                 ...formData,
@@ -107,17 +127,51 @@ const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setForm
         });
     };
 
-        // 중간 날짜인지 판별하는 함수
-        const isMiddleDate = (date: Date): boolean => {
-            if (Array.isArray(selectedDates) && selectedDates.length === 2) {
-                const [start, end] = selectedDates;
-                return date > start && date < end; // 시작과 끝 사이에 있는 날짜
-            }
-            return false;
-        };
+    // 중간 날짜인지 판별하는 함수
+    const isMiddleDate = (date: Date): boolean => {
+        if (Array.isArray(selectedDates) && selectedDates.length === 2) {
+            const [start, end] = selectedDates;
+            return date > start && date < end; // 시작과 끝 사이에 있는 날짜
+        }
+        return false;
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+    
+        // 검증 순서: 제목 -> 날짜 -> 테마
+        if (!formData.step1.title.trim()) {
+            alert("여행 제목을 입력하세요.");
+            return;
+        }
+    
+        if (!Array.isArray(selectedDates) || selectedDates.length !== 2) {
+            alert("여행 날짜를 선택하세요.");
+            return;
+        }
+    
+        if (formData.step1.themes.length === 0) {
+            alert("여행 테마를 선택하세요.");
+            return;
+        }
+    
+        nextStep(); // 모든 검증이 통과한 경우 다음 단계로 이동
+    };
+
+    // 달력 내부 비활성 부분 클릭 핸들러
+    const handleWrapperClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        const clickedElement = event.target as HTMLElement;
+
+        // 날짜 셀인지 검사
+        if (!clickedElement.closest(".react-calendar__tile")) {
+            console.log("달력 비활성 부분 클릭!");
+            setSelectedDates(undefined);  // 선택 초기화
+            console.log(selectedDates);
+        }
+    };
 
     return (
-    <div className={PYTS1_Box}>
+        <form className={PYTS1_Box} onSubmit={handleSubmit}>
 
         {/* 여행 제목 */}
         <div className={PYTS1_Trip_Title_Box}>
@@ -134,13 +188,13 @@ const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setForm
         </div>
 
         {/* 날짜 선택 */}
-        <div className={PYTS1_Trip_Calendar_Box}>
+        <div className={PYTS1_Trip_Calendar_Box} onClick={handleWrapperClick}>
             <div className={PYTS1_Contents_Title}>
                 <h3>날짜</h3>
             </div>
             <Calendar
                 onClickDay={handleDateChange} // 날짜 클릭 핸들러
-                // onActiveStartDateChange={handleActiveStartDateChange}
+                
                 value={selectedDates} // 기본 선택 날짜
                 calendarType="gregory" // 달력 타입 : "gregory" 월화수,  "hebrew" 일월화
                 prev2Label={null} // 년 단위 버튼(<<) 삭제
@@ -157,6 +211,11 @@ const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setForm
                 tileClassName={({ date }) => {
                     if (Array.isArray(selectedDates)) {
                         const [start, end] = selectedDates;
+
+                        // 하루만 선택된 경우
+                        if (start.toDateString() === end.toDateString() && date.toDateString() === start.toDateString()) {
+                            return singleDateStyle; // 하루 선택 스타일
+                        }
 
                         if (date.toDateString() === start.toDateString()) {
                             return startDateStyle; // 시작 날짜 스타일
@@ -208,13 +267,14 @@ const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setForm
 
         {/* 다음 단계 버튼 */}
         <div className={PYTS1_Button_Box}>
-            <button type="button" onClick={nextStep}
+            <button type="submit"
                     className={PYTS1_Button}
             >
             다음단계
             </button>
         </div>
-    </div>
+
+    </form>
     );
 };
 
