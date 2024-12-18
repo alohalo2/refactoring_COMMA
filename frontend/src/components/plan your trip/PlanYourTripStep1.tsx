@@ -22,10 +22,6 @@ import {
     middleDateStyle,
 } from '../../css/plan your trip/PlanYourTripStep1.css';
 
-// // Value 타입 직접 정의
-// type ValuePiece = Date | null;
-// type Value = ValuePiece | [ValuePiece, ValuePiece];
-
 type PlanYourTripStep1Props = {
     formData: TripFormState;
     setFormData: React.Dispatch<React.SetStateAction<TripFormState>>;
@@ -173,108 +169,108 @@ const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setForm
     return (
         <form className={PYTS1_Box} onSubmit={handleSubmit}>
 
-        {/* 여행 제목 */}
-        <div className={PYTS1_Trip_Title_Box}>
-            <div className={PYTS1_Contents_Title}>
-                <h3>여행 제목</h3>
+            {/* 여행 제목 */}
+            <div className={PYTS1_Trip_Title_Box}>
+                <div className={PYTS1_Contents_Title}>
+                    <h3>여행 제목</h3>
+                </div>
+                <input
+                type="text"
+                value={formData.step1.title || ''}
+                onChange={handleTitleChange}
+                placeholder="여행 제목을 입력하세요"
+                className={PYTS1_Trip_Title_Input}
+                />
             </div>
-            <input
-            type="text"
-            value={formData.step1.title || ''}
-            onChange={handleTitleChange}
-            placeholder="여행 제목을 입력하세요"
-            className={PYTS1_Trip_Title_Input}
-            />
-        </div>
 
-        {/* 날짜 선택 */}
-        <div className={PYTS1_Trip_Calendar_Box} onClick={handleWrapperClick}>
-            <div className={PYTS1_Contents_Title}>
-                <h3>날짜</h3>
+            {/* 날짜 선택 */}
+            <div className={PYTS1_Trip_Calendar_Box} onClick={handleWrapperClick}>
+                <div className={PYTS1_Contents_Title}>
+                    <h3>날짜</h3>
+                </div>
+                <Calendar
+                    onClickDay={handleDateChange} // 날짜 클릭 핸들러
+                    
+                    value={selectedDates} // 기본 선택 날짜
+                    calendarType="gregory" // 달력 타입 : "gregory" 월화수,  "hebrew" 일월화
+                    prev2Label={null} // 년 단위 버튼(<<) 삭제
+                    next2Label={null} // 년 단위 버튼(>>) 삭제
+                    formatDay={(locale, date) => moment(date).format("D")} // 일 제거 숫자만 보이게
+                    formatYear={(locale, date) => moment(date).format("YYYY")} // 네비게이션 눌렀을때 숫자 년도만 보이게
+                    formatMonthYear={(locale, date) => moment(date).format("YYYY. MM")} // 네비게이션에서 2023. 12 이렇게 보이도록 설정
+                    minDetail="year" // 10년단위 년도 숨기기
+                    showNeighboringMonth={false}
+                    showDoubleView={true} // 두 개의 달력 뷰 표시
+
+                    tileDisabled={({ date }) => date.getTime() < new Date(new Date().setHours(0, 0, 0, 0)).getTime()}
+
+                    tileClassName={({ date }) => {
+                        if (Array.isArray(selectedDates)) {
+                            const [start, end] = selectedDates;
+
+                            // 하루만 선택된 경우
+                            if (start.toDateString() === end.toDateString() && date.toDateString() === start.toDateString()) {
+                                return singleDateStyle; // 하루 선택 스타일
+                            }
+
+                            if (date.toDateString() === start.toDateString()) {
+                                return startDateStyle; // 시작 날짜 스타일
+                            }
+                            if (date.toDateString() === end.toDateString()) {
+                                return endDateStyle; // 끝 날짜 스타일
+                            }
+                            if (isMiddleDate(date)) {
+                                return middleDateStyle; // 중간 날짜 스타일
+                            }
+                        }
+                        return null;
+                    }}
+
+                    className={PYTS1_Trip_Calendar}
+                />
             </div>
-            <Calendar
-                onClickDay={handleDateChange} // 날짜 클릭 핸들러
-                
-                value={selectedDates} // 기본 선택 날짜
-                calendarType="gregory" // 달력 타입 : "gregory" 월화수,  "hebrew" 일월화
-                prev2Label={null} // 년 단위 버튼(<<) 삭제
-                next2Label={null} // 년 단위 버튼(>>) 삭제
-                formatDay={(locale, date) => moment(date).format("D")} // 일 제거 숫자만 보이게
-                formatYear={(locale, date) => moment(date).format("YYYY")} // 네비게이션 눌렀을때 숫자 년도만 보이게
-                formatMonthYear={(locale, date) => moment(date).format("YYYY. MM")} // 네비게이션에서 2023. 12 이렇게 보이도록 설정
-                minDetail="year" // 10년단위 년도 숨기기
-                showNeighboringMonth={false}
-                showDoubleView={true} // 두 개의 달력 뷰 표시
-
-                tileDisabled={({ date }) => date.getTime() < new Date(new Date().setHours(0, 0, 0, 0)).getTime()}
-
-                tileClassName={({ date }) => {
-                    if (Array.isArray(selectedDates)) {
-                        const [start, end] = selectedDates;
-
-                        // 하루만 선택된 경우
-                        if (start.toDateString() === end.toDateString() && date.toDateString() === start.toDateString()) {
-                            return singleDateStyle; // 하루 선택 스타일
-                        }
-
-                        if (date.toDateString() === start.toDateString()) {
-                            return startDateStyle; // 시작 날짜 스타일
-                        }
-                        if (date.toDateString() === end.toDateString()) {
-                            return endDateStyle; // 끝 날짜 스타일
-                        }
-                        if (isMiddleDate(date)) {
-                            return middleDateStyle; // 중간 날짜 스타일
-                        }
-                    }
-                    return null;
-                }}
-
-                className={PYTS1_Trip_Calendar}
-            />
-        </div>
-        {/* 날짜 선택 저장 버튼 */}
-        <div className={PYTS1_Button_Box}>
-            <button type="button" onClick={saveSelectedDates} className={PYTS1_Button}>
-                날짜 선택 완료
-            </button>
-        </div>
-
-        {/* 여행 테마 */}
-        <div className={PYTS1_Trip_Select_Box}>
-            <div className={PYTS1_Contents_Title}>
-                <h3>여행 테마</h3>
+            {/* 날짜 선택 저장 버튼 */}
+            <div className={PYTS1_Button_Box}>
+                <button type="button" onClick={saveSelectedDates} className={PYTS1_Button}>
+                    날짜 선택 완료
+                </button>
             </div>
-            <div>
-                <p>**여행 테마를 선택해주세요. (중복 선택 가능)</p>
-                <div className={PYTS1_Trip_Select}>
-                {themes.map((theme) => (
-                    <label key={theme} style={{ marginRight: '10px' }}
-                            className={PYTS1_Trip_Select_Label}
-                    >
-                    <input
-                        type="checkbox"
-                        checked={formData.step1.themes.includes(theme)}
-                        onChange={() => handleThemeChange(theme)}
-                        className={PYTS1_Trip_Select_Checkbox}
-                    />
-                    {theme}
-                    </label>
-                ))}
+
+            {/* 여행 테마 */}
+            <div className={PYTS1_Trip_Select_Box}>
+                <div className={PYTS1_Contents_Title}>
+                    <h3>여행 테마</h3>
+                </div>
+                <div>
+                    <p>**여행 테마를 선택해주세요. (중복 선택 가능)</p>
+                    <div className={PYTS1_Trip_Select}>
+                    {themes.map((theme) => (
+                        <label key={theme} style={{ marginRight: '10px' }}
+                                className={PYTS1_Trip_Select_Label}
+                        >
+                        <input
+                            type="checkbox"
+                            checked={formData.step1.themes.includes(theme)}
+                            onChange={() => handleThemeChange(theme)}
+                            className={PYTS1_Trip_Select_Checkbox}
+                        />
+                        {theme}
+                        </label>
+                    ))}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        {/* 다음 단계 버튼 */}
-        <div className={PYTS1_Button_Box}>
-            <button type="submit"
-                    className={PYTS1_Button}
-            >
-            다음단계
-            </button>
-        </div>
+            {/* 다음 단계 버튼 */}
+            <div className={PYTS1_Button_Box}>
+                <button type="submit"
+                        className={PYTS1_Button}
+                >
+                다음단계
+                </button>
+            </div>
 
-    </form>
+        </form>
     );
 };
 
