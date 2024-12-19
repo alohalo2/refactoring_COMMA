@@ -28,6 +28,7 @@ type PlanYourTripStep1Props = {
     nextStep: () => void;
 };
 
+
 const PlanYourTripStep1: React.FC<PlanYourTripStep1Props> = ({ formData, setFormData, nextStep }) => {
     const [selectedDates, setSelectedDates] = useState<Date | [Date, Date] | undefined>(undefined); // 선택한 날짜 배열
 
